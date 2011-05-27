@@ -1,0 +1,59 @@
+* What is this?
+  This is an implemenation of Lock-free Work-stealing Deque written in C.
+
+  - There are a number of tasks
+  - Tasks are the same number of task queues as CPUs
+  - A `worker' has a task queue
+  - A worker pops/pushes tasks from its own task queue
+  - A worker takes tasks from other workers
+  - `Pop'/`push' accesses the bottom of task queues
+  - `Take ' accesses the top of task queues
+
+  This is a part of [[http://www.google-melange.com/gsoc/proposal/review/google/gsoc2011/laysakura/1][my project in Google Summer of Code 2011]].
+
+* Features
+  - Task queue is implemented as `unbound circular array',
+    which doesn't have start and end points and expands when the size
+    is less than the number of tasks.
+  - There are already some implementation of Lock-free Work-stealing Deque.
+    But one written in C is not so common.
+    Unlike some languages like Java, the support of `volatile' variable is
+    limited in C. This implementation covers it by using memory barriers.
+  - This uses compare-and-swap (CAS) instruction instead of mutex lock.
+
+* Compile and Test
+  1. All files (except this README ;-) ) is required to build.
+
+  2. Compile the deque source and unit tests.
+     #+BEGIN_SRC sh
+make
+     #+END_SRC
+  3. To test the deque, just type
+     #+BEGIN_SRC sh
+make TEST_gsoc_taskqueue
+     #+END_SRC
+     You can see the number of CPUs used in test and calculation time by
+     #+BEGIN_SRC sh
+./test_gsoc_taskqueue > /dev/null
+     #+END_SRC
+
+     If you also want to test circular array, type
+     #+BEGIN_SRC sh
+make TEST_gsoc_task_circular_array
+     #+END_SRC
+     Note that it will fail if you use 32-bit CPUs.
+
+     Or if you want to test all of them,
+     #+BEGIN_SRC sh
+make test
+     #+END_SRC
+  4. `make clean' to clean the directory.
+
+
+* Welcoming Your Comments
+  I appreciate any of your advice and comments.
+  Feel free to contact me on twitter [[http://twitter.com/laysakura][@laysakura]] .
+
+* Reference
+  1. The Art of Multiprocessor Programming.  Maurice Herlihy, Nir Shavit / Morgan Kaufmann
+  2. Dynamic Circular Work-Stealing Deque.  David Chase, David Chase
